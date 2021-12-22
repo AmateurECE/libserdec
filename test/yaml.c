@@ -40,6 +40,7 @@
 typedef struct MyStruct {
     bool test;
     int a_number;
+    char* a_string;
     int list[4];
 } MyStruct;
 
@@ -62,6 +63,8 @@ int my_struct_visit_map_entry(yaml_deserializer* deser, void* user_data,
     } else if (!strcmp(key, "list_of_four")) {
         result = gobiserde_yaml_deserialize_list(deser,
             my_struct_visit_list_entry, object);
+    } else if (!strcmp(key, "a_string")) {
+        result = gobiserde_yaml_deserialize_string(deser, &object->a_string);
     }
 
     if (!result) {
@@ -80,6 +83,7 @@ int my_struct_deserialize_yaml(yaml_deserializer* deser, MyStruct* value)
 const char* DOCUMENT = "\
 test: true\n\
 a_number: 1\n\
+a_string: 'test'\n\
 list_of_four:\n\
     - 1\n\
     - 2\n\
@@ -100,6 +104,7 @@ int main() {
     assert(2 == my_struct.list[1]);
     assert(3 == my_struct.list[2]);
     assert(4 == my_struct.list[3]);
+    assert(!strcmp(my_struct.a_string, "test"));
 }
 
 ///////////////////////////////////////////////////////////////////////////////

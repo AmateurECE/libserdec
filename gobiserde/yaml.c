@@ -278,4 +278,28 @@ int gobiserde_yaml_deserialize_int(yaml_deserializer* deser, int* value) {
     return 1;
 }
 
+// De-serialize a string value from the input stream. Return a number less than
+// zero if parsing encounters an error.
+int gobiserde_yaml_deserialize_string(yaml_deserializer* deser, char** value) {
+    if (YAML_STREAM_END_EVENT == deser->event.type ||
+        YAML_DOCUMENT_END_EVENT == deser->event.type) {
+        return 0;
+    }
+
+    if (YAML_SCALAR_EVENT != deser->event.type) {
+        return -EINVAL;
+    }
+
+    // TODO: Might be able to avoid this allocation if we delete the previous
+    // event at the beginning of the call, instead of at the end?
+    *value = strdup((const char*)deser->event.data.scalar.value);
+    yaml_event_delete(&deser->event);
+    int result = yaml_parser_parse(&deser->parser, &deser->event);
+    if (!result) {
+        return -1 * result;
+    }
+
+    return 1;
+}
+
 ///////////////////////////////////////////////////////////////////////////////

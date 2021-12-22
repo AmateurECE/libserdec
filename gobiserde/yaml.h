@@ -79,14 +79,19 @@ typedef int yaml_visit_list_callback(yaml_deserializer* deser, void* user_data,
 int gobiserde_yaml_deserialize_list(yaml_deserializer* deser,
     yaml_visit_list_callback* callback, void* user_data);
 
-// De-serialize a boolean from the input stream. Return non-zero if parsing
-// encountered an error, for any reason. This callback requires that booleans
-// be either "true" or "false", and cannot be a value of "0" or non-zero.
+// De-serialize a boolean from the input stream. Return a number less than zero
+// if parsing encountered an error, for any reason. This callback requires that
+// booleans be either "true" or "false", and cannot be a value of "0" or
+// non-zero.
 int gobiserde_yaml_deserialize_bool(yaml_deserializer* deser, bool* value);
 
-// De-serialize an integer value from the input stream. Return non-zero if
-// parsing encountered an error, for any reason.
+// De-serialize an integer value from the input stream. Return a number less
+// than zero if parsing encountered an error, for any reason.
 int gobiserde_yaml_deserialize_int(yaml_deserializer* deser, int* value);
+
+// De-serialize a string value from the input stream. Return a number less than
+// zero if parsing encounters an error.
+int gobiserde_yaml_deserialize_string(yaml_deserializer* deser, char** value);
 
 #endif // GOBISERDE_YAML_H
 
