@@ -7,7 +7,7 @@
 //
 // CREATED:         12/20/2021
 //
-// LAST EDITED:     12/20/2021
+// LAST EDITED:     12/21/2021
 //
 // Copyright 2021, Ethan D. Twardy
 //
@@ -63,6 +63,18 @@ typedef int yaml_visit_map_callback(yaml_deserializer* deser, void* user_data,
 // encountered an error, for any reason.
 int gobiserde_yaml_deserialize_map(yaml_deserializer* deser,
     yaml_visit_map_callback* callback, void* user_data);
+
+// This callback is invoked to "visit" (i.e. handle) entries of a list. This is
+// a user-defined callback. <index> is n - 1, where n is the number of times
+// the callback has been invoked.
+typedef int yaml_visit_list_callback(yaml_deserializer* deser, void* user_data,
+    size_t index);
+
+// Deserialize a list from the input stream. The callback is invoked for every
+// list entry, and it's the responsibility of the callback to drive the
+// deserializer to de-serialize interesting types from the input stream.
+int gobiserde_yaml_deserialize_list(yaml_deserializer* deser,
+    yaml_visit_list_callback* callback, void* user_data);
 
 // De-serialize a boolean from the input stream. Return non-zero if parsing
 // encountered an error, for any reason. This callback requires that booleans

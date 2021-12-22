@@ -7,7 +7,7 @@
 //
 // CREATED:         12/20/2021
 //
-// LAST EDITED:     12/20/2021
+// LAST EDITED:     12/21/2021
 //
 // Copyright 2021, Ethan D. Twardy
 //
@@ -40,7 +40,15 @@
 typedef struct MyStruct {
     bool test;
     int a_number;
+    int list[4];
 } MyStruct;
+
+int my_struct_visit_list_entry(yaml_deserializer* deser, void* user_data,
+    size_t index)
+{
+    MyStruct* object = (MyStruct*)user_data;
+    return gobiserde_yaml_deserialize_int(deser, &object->list[index]);
+}
 
 int my_struct_visit_map_entry(yaml_deserializer* deser, void* user_data,
     const char* key)
@@ -51,6 +59,9 @@ int my_struct_visit_map_entry(yaml_deserializer* deser, void* user_data,
         result = gobiserde_yaml_deserialize_bool(deser, &object->test);
     } else if (!strcmp(key, "a_number")) {
         result = gobiserde_yaml_deserialize_int(deser, &object->a_number);
+    } else if (!strcmp(key, "list_of_four")) {
+        result = gobiserde_yaml_deserialize_list(deser,
+            my_struct_visit_list_entry, object);
     }
 
     if (!result) {
@@ -69,6 +80,11 @@ int my_struct_deserialize_yaml(yaml_deserializer* deser, MyStruct* value)
 const char* DOCUMENT = "\
 test: true\n\
 a_number: 1\n\
+list_of_four:\n\
+    - 1\n\
+    - 2\n\
+    - 3\n\
+    - 4\n\
 ";
 
 int main() {
@@ -80,6 +96,10 @@ int main() {
     assert(1 == result);
     assert(true == my_struct.test);
     assert(1 == my_struct.a_number);
+    assert(1 == my_struct.list[0]);
+    assert(2 == my_struct.list[1]);
+    assert(3 == my_struct.list[2]);
+    assert(4 == my_struct.list[3]);
 }
 
 ///////////////////////////////////////////////////////////////////////////////

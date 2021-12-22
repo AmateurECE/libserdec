@@ -7,7 +7,7 @@
 //
 // CREATED:         12/20/2021
 //
-// LAST EDITED:     12/20/2021
+// LAST EDITED:     12/21/2021
 //
 // Copyright 2021, Ethan D. Twardy
 //
@@ -142,6 +142,50 @@ int gobiserde_yaml_deserialize_map(yaml_deserializer* deser,
     if (!result) {
         return -1 * result;
     }
+    return 1;
+}
+
+// Deserialize a list from the input stream. The callback is invoked for every
+// list entry, and it's the responsibility of the callback to drive the
+// deserializer to de-serialize interesting types from the input stream.
+int gobiserde_yaml_deserialize_list(yaml_deserializer* deser,
+    yaml_visit_list_callback* callback, void* user_data)
+{
+    if (YAML_STREAM_END_EVENT == deser->event.type ||
+        YAML_DOCUMENT_END_EVENT == deser->event.type) {
+        return 0;
+    }
+
+    if (YAML_SEQUENCE_START_EVENT != deser->event.type) {
+        return -EINVAL;
+    }
+
+    yaml_event_delete(&deser->event);
+    int result = yaml_parser_parse(&deser->parser, &deser->event);
+    if (!result) {
+        return -1 * result;
+    }
+
+    size_t index = 0;
+    while (YAML_SEQUENCE_END_EVENT != deser->event.type) {
+        result = callback(deser, user_data, index++);
+        if (!result) {
+            yaml_parser_delete(&deser->event);
+            result = yaml_parser_parse(&deser->parser, &deser->event);
+            if (!result) {
+                // TODO: Replace this with some negative value, since !result
+                // implies that result == 0.
+                return -1 * result;
+            }
+        }
+    }
+
+    yaml_event_delete(&deser->event);
+    result = yaml_parser_parse(&deser->parser, &deser->event);
+    if (!result) {
+        return -1 * result;
+    }
+
     return 1;
 }
 
