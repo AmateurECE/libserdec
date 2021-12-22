@@ -47,6 +47,9 @@ typedef struct yaml_deserializer yaml_deserializer;
 yaml_deserializer* gobiserde_yaml_deserializer_new_string(const char* string,
     size_t string_length);
 
+// Initialize a de-serializer from the given input string.
+yaml_deserializer* gobiserde_yaml_deserializer_new_file(FILE* input_file);
+
 // Free a de-serializer.
 void gobiserde_yaml_deserializer_free(yaml_deserializer** deser);
 

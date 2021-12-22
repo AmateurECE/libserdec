@@ -7,7 +7,7 @@
 #
 # CREATED:          12/20/2021
 #
-# LAST EDITED:      12/20/2021
+# LAST EDITED:      12/21/2021
 #
 # Copyright 2021, Ethan D. Twardy
 #
@@ -45,6 +45,13 @@ add_project_arguments(
 )
 include_directories('gobiserde')
 
+# Headers for installation
+install_headers(
+  'gobiserde/yaml.h',
+  subdir: 'gobiserde',
+)
+
+# Sources for the library
 libgobiserde_sources = files([
   'gobiserde/yaml.c',
 ])
@@ -54,7 +61,12 @@ libgobiserde = library(
   'gobiserde',
   sources: libgobiserde_sources,
   dependencies: [libyaml],
+  version: meson.project_version(),
+  install: true,
 )
+
+pkgconfig = import('pkgconfig')
+pkgconfig.generate(libgobiserde, filebase: 'libgobiserde')
 
 executable(
   'testgobiserde',

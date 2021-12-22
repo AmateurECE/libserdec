@@ -79,6 +79,33 @@ yaml_deserializer* gobiserde_yaml_deserializer_new_string(const char* string,
     return deser;
 }
 
+// Create a YAML deserializer from the input file.
+yaml_deserializer* gobiserde_yaml_deserializer_new_file(FILE* input_file) {
+    yaml_deserializer* deser = malloc(sizeof(yaml_deserializer));
+    if (NULL == deser) {
+        return NULL;
+    }
+
+    memset(deser, 0, sizeof(yaml_deserializer));
+    yaml_parser_initialize(&deser->parser);
+    yaml_parser_set_input_file(&deser->parser, input_file);
+
+    bool done = false;
+    while (!done) {
+        if (!yaml_parser_parse(&deser->parser, &deser->event)) {
+            free(deser);
+            return NULL;
+        }
+
+        if (YAML_STREAM_START_EVENT != deser->event.type &&
+            YAML_DOCUMENT_START_EVENT != deser->event.type) {
+            break;
+        }
+    }
+
+    return deser;
+}
+
 // Free a de-serializer.
 void gobiserde_yaml_deserializer_free(yaml_deserializer** deser) {
     if (NULL == *deser) {
@@ -170,7 +197,7 @@ int gobiserde_yaml_deserialize_list(yaml_deserializer* deser,
     while (YAML_SEQUENCE_END_EVENT != deser->event.type) {
         result = callback(deser, user_data, index++);
         if (!result) {
-            yaml_parser_delete(&deser->event);
+            yaml_event_delete(&deser->event);
             result = yaml_parser_parse(&deser->parser, &deser->event);
             if (!result) {
                 // TODO: Replace this with some negative value, since !result
