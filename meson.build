@@ -7,7 +7,7 @@
 #
 # CREATED:          12/20/2021
 #
-# LAST EDITED:      12/21/2021
+# LAST EDITED:      01/17/2022
 #
 # Copyright 2021, Ethan D. Twardy
 #
@@ -32,7 +32,7 @@
 
 project(
   'libgobiserde', 'c',
-  version: '0.1.1',
+  version: '0.1.2',
   default_options: [
     'buildtype=debug',
     'warning_level=3',
