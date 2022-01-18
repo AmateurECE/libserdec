@@ -7,7 +7,7 @@
 //
 // CREATED:         12/20/2021
 //
-// LAST EDITED:     12/21/2021
+// LAST EDITED:     01/17/2022
 //
 // Copyright 2021, Ethan D. Twardy
 //
@@ -35,6 +35,7 @@
 
 #include <stdbool.h>
 #include <stddef.h>
+#include <stdio.h>
 
 // This struct maintains all internal state of the deserializer.
 typedef struct yaml_deserializer yaml_deserializer;
