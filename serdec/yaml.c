@@ -7,7 +7,7 @@
 //
 // CREATED:         12/20/2021
 //
-// LAST EDITED:     12/21/2021
+// LAST EDITED:     02/03/2022
 //
 // Copyright 2021, Ethan D. Twardy
 //
@@ -37,7 +37,7 @@
 
 #include <yaml.h>
 
-#include <gobiserde/yaml.h>
+#include <serdec/yaml.h>
 
 // This struct maintains all internal state of the deserializer.
 typedef struct yaml_deserializer {
@@ -50,7 +50,7 @@ typedef struct yaml_deserializer {
 ////
 
 // Initialize a de-serializer from the given input string.
-yaml_deserializer* gobiserde_yaml_deserializer_new_string(const char* string,
+yaml_deserializer* serdec_yaml_deserializer_new_string(const char* string,
     size_t string_length)
 {
     yaml_deserializer* deser = malloc(sizeof(yaml_deserializer));
@@ -80,7 +80,7 @@ yaml_deserializer* gobiserde_yaml_deserializer_new_string(const char* string,
 }
 
 // Create a YAML deserializer from the input file.
-yaml_deserializer* gobiserde_yaml_deserializer_new_file(FILE* input_file) {
+yaml_deserializer* serdec_yaml_deserializer_new_file(FILE* input_file) {
     yaml_deserializer* deser = malloc(sizeof(yaml_deserializer));
     if (NULL == deser) {
         return NULL;
@@ -107,7 +107,7 @@ yaml_deserializer* gobiserde_yaml_deserializer_new_file(FILE* input_file) {
 }
 
 // Free a de-serializer.
-void gobiserde_yaml_deserializer_free(yaml_deserializer** deser) {
+void serdec_yaml_deserializer_free(yaml_deserializer** deser) {
     if (NULL == *deser) {
         return;
     }
@@ -127,7 +127,7 @@ typedef int yaml_visit_map_callback(yaml_deserializer* deser, void* user_data,
 
 // De-serialize a map from the input stream. Return non-zero if parsing
 // encountered an error, for any reason.
-int gobiserde_yaml_deserialize_map(yaml_deserializer* deser,
+int serdec_yaml_deserialize_map(yaml_deserializer* deser,
     yaml_visit_map_callback* callback, void* user_data)
 {
     if (YAML_STREAM_END_EVENT == deser->event.type ||
@@ -175,7 +175,7 @@ int gobiserde_yaml_deserialize_map(yaml_deserializer* deser,
 // Deserialize a list from the input stream. The callback is invoked for every
 // list entry, and it's the responsibility of the callback to drive the
 // deserializer to de-serialize interesting types from the input stream.
-int gobiserde_yaml_deserialize_list(yaml_deserializer* deser,
+int serdec_yaml_deserialize_list(yaml_deserializer* deser,
     yaml_visit_list_callback* callback, void* user_data)
 {
     if (YAML_STREAM_END_EVENT == deser->event.type ||
@@ -219,7 +219,7 @@ int gobiserde_yaml_deserialize_list(yaml_deserializer* deser,
 // De-serialize a boolean from the input stream. Return non-zero if parsing
 // encountered an error, for any reason. This callback requires that booleans
 // be either "true" or "false", and cannot be a value of "0" or non-zero.
-int gobiserde_yaml_deserialize_bool(yaml_deserializer* deser, bool* value) {
+int serdec_yaml_deserialize_bool(yaml_deserializer* deser, bool* value) {
     if (YAML_STREAM_END_EVENT == deser->event.type ||
         YAML_DOCUMENT_END_EVENT == deser->event.type) {
         return 0;
@@ -251,7 +251,7 @@ int gobiserde_yaml_deserialize_bool(yaml_deserializer* deser, bool* value) {
 
 // De-serialize an integer value from the input stream. Return non-zero if
 // parsing encountered an error, for any reason.
-int gobiserde_yaml_deserialize_int(yaml_deserializer* deser, int* value) {
+int serdec_yaml_deserialize_int(yaml_deserializer* deser, int* value) {
     if (YAML_STREAM_END_EVENT == deser->event.type ||
         YAML_DOCUMENT_END_EVENT == deser->event.type) {
         return 0;
@@ -280,7 +280,7 @@ int gobiserde_yaml_deserialize_int(yaml_deserializer* deser, int* value) {
 
 // De-serialize a string value from the input stream. Return a number less than
 // zero if parsing encounters an error.
-int gobiserde_yaml_deserialize_string(yaml_deserializer* deser, char** value) {
+int serdec_yaml_deserialize_string(yaml_deserializer* deser, char** value) {
     if (YAML_STREAM_END_EVENT == deser->event.type ||
         YAML_DOCUMENT_END_EVENT == deser->event.type) {
         return 0;

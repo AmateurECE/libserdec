@@ -7,7 +7,7 @@
 #
 # CREATED:          12/20/2021
 #
-# LAST EDITED:      01/17/2022
+# LAST EDITED:      02/03/2022
 #
 # Copyright 2021, Ethan D. Twardy
 #
@@ -31,7 +31,7 @@
 ###
 
 project(
-  'libgobiserde', 'c',
+  'libserdec', 'c',
   version: '0.1.2',
   default_options: [
     'buildtype=debug',
@@ -43,35 +43,35 @@ add_project_arguments(
   '-frecord-gcc-switches',
   language: 'c'
 )
-include_directories('gobiserde')
+include_directories('serdec')
 
 # Headers for installation
 install_headers(
-  'gobiserde/yaml.h',
-  subdir: 'gobiserde',
+  'serdec/yaml.h',
+  subdir: 'serdec',
 )
 
 # Sources for the library
-libgobiserde_sources = files([
-  'gobiserde/yaml.c',
+libserdec_sources = files([
+  'serdec/yaml.c',
 ])
 
 libyaml = dependency('yaml-0.1')
-libgobiserde = library(
-  'gobiserde',
-  sources: libgobiserde_sources,
+libserdec = library(
+  'serdec',
+  sources: libserdec_sources,
   dependencies: [libyaml],
   version: meson.project_version(),
   install: true,
 )
 
 pkgconfig = import('pkgconfig')
-pkgconfig.generate(libgobiserde, filebase: 'libgobiserde')
+pkgconfig.generate(libserdec, filebase: 'libserdec')
 
 executable(
-  'testgobiserde',
+  'testserdec',
   'test/yaml.c',
-  link_with: [libgobiserde],
+  link_with: [libserdec],
 )
 
 ###############################################################################

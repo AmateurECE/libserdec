@@ -7,7 +7,7 @@
 //
 // CREATED:         12/20/2021
 //
-// LAST EDITED:     12/21/2021
+// LAST EDITED:     02/03/2022
 //
 // Copyright 2021, Ethan D. Twardy
 //
@@ -35,7 +35,7 @@
 #include <stdio.h>
 #include <string.h>
 
-#include <gobiserde/yaml.h>
+#include <serdec/yaml.h>
 
 typedef struct MyStruct {
     bool test;
@@ -48,7 +48,7 @@ int my_struct_visit_list_entry(yaml_deserializer* deser, void* user_data,
     size_t index)
 {
     MyStruct* object = (MyStruct*)user_data;
-    return gobiserde_yaml_deserialize_int(deser, &object->list[index]);
+    return serdec_yaml_deserialize_int(deser, &object->list[index]);
 }
 
 int my_struct_visit_map_entry(yaml_deserializer* deser, void* user_data,
@@ -57,14 +57,14 @@ int my_struct_visit_map_entry(yaml_deserializer* deser, void* user_data,
     MyStruct* object = (MyStruct*)user_data;
     int result = 0;
     if (!strcmp(key, "test")) {
-        result = gobiserde_yaml_deserialize_bool(deser, &object->test);
+        result = serdec_yaml_deserialize_bool(deser, &object->test);
     } else if (!strcmp(key, "a_number")) {
-        result = gobiserde_yaml_deserialize_int(deser, &object->a_number);
+        result = serdec_yaml_deserialize_int(deser, &object->a_number);
     } else if (!strcmp(key, "list_of_four")) {
-        result = gobiserde_yaml_deserialize_list(deser,
+        result = serdec_yaml_deserialize_list(deser,
             my_struct_visit_list_entry, object);
     } else if (!strcmp(key, "a_string")) {
-        result = gobiserde_yaml_deserialize_string(deser, &object->a_string);
+        result = serdec_yaml_deserialize_string(deser, &object->a_string);
     }
 
     if (!result) {
@@ -76,7 +76,7 @@ int my_struct_visit_map_entry(yaml_deserializer* deser, void* user_data,
 
 int my_struct_deserialize_yaml(yaml_deserializer* deser, MyStruct* value)
 {
-    return gobiserde_yaml_deserialize_map(deser, my_struct_visit_map_entry,
+    return serdec_yaml_deserialize_map(deser, my_struct_visit_map_entry,
         value);
 }
 
@@ -92,7 +92,7 @@ list_of_four:\n\
 ";
 
 int main() {
-    yaml_deserializer* deser = gobiserde_yaml_deserializer_new_string(DOCUMENT,
+    yaml_deserializer* deser = serdec_yaml_deserializer_new_string(DOCUMENT,
         strlen(DOCUMENT));
     assert(NULL != deser);
     MyStruct my_struct = {0};
