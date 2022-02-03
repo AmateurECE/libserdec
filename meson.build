@@ -32,7 +32,7 @@
 
 project(
   'libserdec', 'c',
-  version: '0.1.2',
+  version: '0.2.0',
   default_options: [
     'buildtype=debug',
     'warning_level=3',
