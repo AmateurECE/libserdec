@@ -7,7 +7,7 @@
 #
 # CREATED:          12/20/2021
 #
-# LAST EDITED:      02/03/2022
+# LAST EDITED:      02/04/2022
 #
 # Copyright 2021, Ethan D. Twardy
 #
@@ -43,7 +43,6 @@ add_project_arguments(
   '-frecord-gcc-switches',
   language: 'c'
 )
-include_directories('serdec')
 
 # Headers for installation
 install_headers(
@@ -51,16 +50,14 @@ install_headers(
   subdir: 'serdec',
 )
 
-# Sources for the library
-libserdec_sources = files([
-  'serdec/yaml.c',
-])
-
 libyaml = dependency('yaml-0.1')
 libserdec = library(
   'serdec',
-  sources: libserdec_sources,
+  sources: [
+  'serdec/yaml.c',
+  ],
   dependencies: [libyaml],
+  include_directories: ['.'],
   version: meson.project_version(),
   install: true,
 )
@@ -68,10 +65,17 @@ libserdec = library(
 pkgconfig = import('pkgconfig')
 pkgconfig.generate(libserdec, filebase: 'libserdec')
 
+unity = dependency('unity', modules: ['unity::framework'])
+
 executable(
   'testserdec',
-  'test/yaml.c',
+  sources: files([
+    'test/main.c',
+    'test/test-yaml-deser.c',
+  ]),
+  include_directories: ['.'],
   link_with: [libserdec],
+  dependencies: [unity],
 )
 
 ###############################################################################

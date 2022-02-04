@@ -7,7 +7,7 @@
 //
 // CREATED:         12/20/2021
 //
-// LAST EDITED:     02/03/2022
+// LAST EDITED:     02/04/2022
 //
 // Copyright 2021, Ethan D. Twardy
 //
@@ -30,12 +30,17 @@
 // IN THE SOFTWARE.
 ////
 
-#include <assert.h>
 #include <errno.h>
 #include <stdio.h>
 #include <string.h>
 
 #include <serdec/yaml.h>
+
+#include <unity_fixture.h>
+
+TEST_GROUP(YamlDeser);
+TEST_SETUP(YamlDeser) {}
+TEST_TEAR_DOWN(YamlDeser) {}
 
 typedef struct MyStruct {
     bool test;
@@ -91,20 +96,24 @@ list_of_four:\n\
     - 4\n\
 ";
 
-int main() {
+TEST(YamlDeser, BasicDocument) {
     yaml_deserializer* deser = serdec_yaml_deserializer_new_string(DOCUMENT,
         strlen(DOCUMENT));
-    assert(NULL != deser);
+    TEST_ASSERT(NULL != deser);
     MyStruct my_struct = {0};
     int result = my_struct_deserialize_yaml(deser, &my_struct);
-    assert(1 == result);
-    assert(true == my_struct.test);
-    assert(1 == my_struct.a_number);
-    assert(1 == my_struct.list[0]);
-    assert(2 == my_struct.list[1]);
-    assert(3 == my_struct.list[2]);
-    assert(4 == my_struct.list[3]);
-    assert(!strcmp(my_struct.a_string, "test"));
+    TEST_ASSERT(1 == result);
+    TEST_ASSERT(true == my_struct.test);
+    TEST_ASSERT(1 == my_struct.a_number);
+    TEST_ASSERT(1 == my_struct.list[0]);
+    TEST_ASSERT(2 == my_struct.list[1]);
+    TEST_ASSERT(3 == my_struct.list[2]);
+    TEST_ASSERT(4 == my_struct.list[3]);
+    TEST_ASSERT(!strcmp(my_struct.a_string, "test"));
+}
+
+TEST_GROUP_RUNNER(YamlDeser) {
+    RUN_TEST_CASE(YamlDeser, BasicDocument);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
