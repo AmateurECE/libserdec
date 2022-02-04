@@ -49,14 +49,14 @@ typedef struct MyStruct {
     int list[4];
 } MyStruct;
 
-int my_struct_visit_list_entry(yaml_deserializer* deser, void* user_data,
+int my_struct_visit_list_entry(SerdecYamlDeserializer* deser, void* user_data,
     size_t index)
 {
     MyStruct* object = (MyStruct*)user_data;
     return serdec_yaml_deserialize_int(deser, &object->list[index]);
 }
 
-int my_struct_visit_map_entry(yaml_deserializer* deser, void* user_data,
+int my_struct_visit_map_entry(SerdecYamlDeserializer* deser, void* user_data,
     const char* key)
 {
     MyStruct* object = (MyStruct*)user_data;
@@ -79,7 +79,7 @@ int my_struct_visit_map_entry(yaml_deserializer* deser, void* user_data,
     return result;
 }
 
-int my_struct_deserialize_yaml(yaml_deserializer* deser, MyStruct* value)
+int my_struct_deserialize_yaml(SerdecYamlDeserializer* deser, MyStruct* value)
 {
     return serdec_yaml_deserialize_map(deser, my_struct_visit_map_entry,
         value);
@@ -97,8 +97,8 @@ list_of_four:\n\
 ";
 
 TEST(YamlDeser, BasicDocument) {
-    yaml_deserializer* deser = serdec_yaml_deserializer_new_string(DOCUMENT,
-        strlen(DOCUMENT));
+    SerdecYamlDeserializer* deser = serdec_yaml_deserializer_new_string(
+        DOCUMENT, strlen(DOCUMENT));
     TEST_ASSERT(NULL != deser);
     MyStruct my_struct = {0};
     int result = my_struct_deserialize_yaml(deser, &my_struct);
