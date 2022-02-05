@@ -61,6 +61,16 @@ int my_struct_serialize_yaml(SerdecYamlSerializer* ser, const MyStruct* value)
                 value->list_of_four[i]));
     }
     TEST_ASSERT_EQUAL_INT(0, serdec_yaml_serialize_list_end(ser));
+
+    // Serialize an InnerStruct object called "my_inner"
+    TEST_ASSERT_EQUAL_INT(0, serdec_yaml_serialize_map_key(ser, "my_inner"));
+    TEST_ASSERT_EQUAL_INT(0, serdec_yaml_serialize_map_start(ser));
+
+    TEST_ASSERT_EQUAL_INT(0, serdec_yaml_serialize_map_key(ser, "my_value"));
+    TEST_ASSERT_EQUAL_INT(0, serdec_yaml_serialize_int(ser,
+            value->my_inner.my_value));
+    TEST_ASSERT_EQUAL_INT(0, serdec_yaml_serialize_map_end(ser));
+
     TEST_ASSERT_EQUAL_INT(0, serdec_yaml_serialize_map_end(ser));
     return 0;
 }
@@ -76,6 +86,8 @@ list_of_four:\n\
 - 2\n\
 - 3\n\
 - 4\n\
+my_inner:\n\
+    my_value: 4\n\
 ";
 
 TEST(YamlSer, BasicDocument) {
@@ -84,6 +96,7 @@ TEST(YamlSer, BasicDocument) {
         .a_number = 1,
         .a_string = "test",
         .list_of_four = {1, 2, 3, 4},
+        .my_inner = {.my_value = 4},
     };
 
     SerdecYamlSerializer* ser = serdec_yaml_serializer_new_string();

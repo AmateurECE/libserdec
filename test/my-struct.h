@@ -7,7 +7,7 @@
 //
 // CREATED:         02/04/2022
 //
-// LAST EDITED:     02/04/2022
+// LAST EDITED:     02/05/2022
 //
 // Copyright 2022, Ethan D. Twardy
 //
@@ -35,11 +35,16 @@
 
 #include <stdbool.h>
 
+typedef struct InnerStruct {
+    int my_value;
+} InnerStruct;
+
 typedef struct MyStruct {
     bool test;
     int a_number;
     char* a_string;
     int list_of_four[4];
+    InnerStruct my_inner;
 } MyStruct;
 
 #endif // SERDEC_MY_STRUCT_H
