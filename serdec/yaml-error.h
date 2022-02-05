@@ -35,6 +35,9 @@
 
 enum {
     // YAML Serializer errors
+    SERR_YAML_NO_ERROR,
+    SERR_YAML_UNKNOWN_ERROR,
+    SERR_YAML_SYSTEM_ERROR,
     SERR_YAML_WRONG_TYPE,
     SERR_YAML_MAX_ERROR,
 };

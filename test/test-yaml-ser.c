@@ -7,7 +7,7 @@
 //
 // CREATED:         02/04/2022
 //
-// LAST EDITED:     02/04/2022
+// LAST EDITED:     02/05/2022
 //
 // Copyright 2022, Ethan D. Twardy
 //
@@ -66,15 +66,16 @@ int my_struct_serialize_yaml(SerdecYamlSerializer* ser, const MyStruct* value)
 }
 
 static const char* BASIC_DOCUMENT = "\
+%YAML 1.1\n\
 ---\n\
 test: true\n\
 a_number: 1\n\
 a_string: 'test'\n\
 list_of_four:\n\
-    - 1\n\
-    - 2\n\
-    - 3\n\
-    - 4\n\
+- 1\n\
+- 2\n\
+- 3\n\
+- 4\n\
 ";
 
 TEST(YamlSer, BasicDocument) {
@@ -96,6 +97,7 @@ TEST(YamlSer, BasicDocument) {
     const char* string = serdec_yaml_serializer_borrow_string(ser);
     TEST_ASSERT_NOT_NULL(string);
     TEST_ASSERT_EQUAL_STRING(string, BASIC_DOCUMENT);
+    serdec_yaml_serializer_free(ser);
 }
 
 TEST_GROUP_RUNNER(YamlSer) {

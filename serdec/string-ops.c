@@ -7,7 +7,7 @@
 //
 // CREATED:         02/04/2022
 //
-// LAST EDITED:     02/04/2022
+// LAST EDITED:     02/05/2022
 //
 // Copyright 2022, Ethan D. Twardy
 //
@@ -42,7 +42,7 @@
 char* string_append_new_with_length(char* restrict string,
     const char* restrict buffer, size_t length)
 {
-    size_t new_length = strlen(string) + strlen(buffer) + 1;
+    size_t new_length = strlen(string) + length + 1;
     char* result = malloc(new_length);
     memset(result, 0, new_length);
     strcat(result, string);
