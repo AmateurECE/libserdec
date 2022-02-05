@@ -46,7 +46,7 @@ typedef struct SerdecYamlDeserializer {
 } SerdecYamlDeserializer;
 
 ///////////////////////////////////////////////////////////////////////////////
-// De-serializer initialization
+// De-serializer Initialization
 ////
 
 // Initialize a de-serializer from the given input string.

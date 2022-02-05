@@ -1,9 +1,9 @@
 ///////////////////////////////////////////////////////////////////////////////
-// NAME:            main.c
+// NAME:            error.h
 //
 // AUTHOR:          Ethan D. Twardy <ethan.twardy@gmail.com>
 //
-// DESCRIPTION:     Test application entrypoint.
+// DESCRIPTION:     Error types for codecs
 //
 // CREATED:         02/04/2022
 //
@@ -30,13 +30,15 @@
 // IN THE SOFTWARE.
 ////
 
-#include <unity_fixture.h>
+#ifndef SERDEC_YAML_ERROR_H
+#define SERDEC_YAML_ERROR_H
 
-int main() {
-    UNITY_BEGIN();
-    RUN_TEST_GROUP(YamlDeser);
-    RUN_TEST_GROUP(YamlSer);
-    return UNITY_END();
-}
+enum {
+    // YAML Serializer errors
+    SERR_YAML_WRONG_TYPE,
+    SERR_YAML_MAX_ERROR,
+};
+
+#endif // SERDEC_YAML_ERROR_H
 
 ///////////////////////////////////////////////////////////////////////////////

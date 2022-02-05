@@ -1,0 +1,4 @@
+* Add _push_mem and _pull_mem interfaces for all codecs
+* Add float serialization/deserialization routines?
+* Make return values consistent and provide a strerror routine?
+* String serialization method for all codecs

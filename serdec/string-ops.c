@@ -1,9 +1,9 @@
 ///////////////////////////////////////////////////////////////////////////////
-// NAME:            main.c
+// NAME:            string-ops.c
 //
 // AUTHOR:          Ethan D. Twardy <ethan.twardy@gmail.com>
 //
-// DESCRIPTION:     Test application entrypoint.
+// DESCRIPTION:     Implementation of string operations.
 //
 // CREATED:         02/04/2022
 //
@@ -30,13 +30,25 @@
 // IN THE SOFTWARE.
 ////
 
-#include <unity_fixture.h>
+#include <stdlib.h>
+#include <string.h>
 
-int main() {
-    UNITY_BEGIN();
-    RUN_TEST_GROUP(YamlDeser);
-    RUN_TEST_GROUP(YamlSer);
-    return UNITY_END();
+#include <serdec/string-ops.h>
+
+///////////////////////////////////////////////////////////////////////////////
+// Public API
+////
+
+char* string_append_new_with_length(char* restrict string,
+    const char* restrict buffer, size_t length)
+{
+    size_t new_length = strlen(string) + strlen(buffer) + 1;
+    char* result = malloc(new_length);
+    memset(result, 0, new_length);
+    strcat(result, string);
+    strncat(result, buffer, length);
+    free(string);
+    return result;
 }
 
 ///////////////////////////////////////////////////////////////////////////////

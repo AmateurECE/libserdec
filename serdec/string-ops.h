@@ -1,9 +1,9 @@
 ///////////////////////////////////////////////////////////////////////////////
-// NAME:            main.c
+// NAME:            string-ops.h
 //
 // AUTHOR:          Ethan D. Twardy <ethan.twardy@gmail.com>
 //
-// DESCRIPTION:     Test application entrypoint.
+// DESCRIPTION:     Header of string operations for codec convenience.
 //
 // CREATED:         02/04/2022
 //
@@ -30,13 +30,14 @@
 // IN THE SOFTWARE.
 ////
 
-#include <unity_fixture.h>
+#ifndef SERDEC_STRING_OPS_H
+#define SERDEC_STRING_OPS_H
 
-int main() {
-    UNITY_BEGIN();
-    RUN_TEST_GROUP(YamlDeser);
-    RUN_TEST_GROUP(YamlSer);
-    return UNITY_END();
-}
+#include <stddef.h>
+
+char* string_append_new_with_length(char* restrict string,
+    const char* restrict buffer, size_t length);
+
+#endif // SERDEC_STRING_OPS_H
 
 ///////////////////////////////////////////////////////////////////////////////

@@ -38,22 +38,17 @@
 
 #include <unity_fixture.h>
 
+#include "my-struct.h"
+
 TEST_GROUP(YamlDeser);
 TEST_SETUP(YamlDeser) {}
 TEST_TEAR_DOWN(YamlDeser) {}
-
-typedef struct MyStruct {
-    bool test;
-    int a_number;
-    char* a_string;
-    int list[4];
-} MyStruct;
 
 int my_struct_visit_list_entry(SerdecYamlDeserializer* deser, void* user_data,
     size_t index)
 {
     MyStruct* object = (MyStruct*)user_data;
-    return serdec_yaml_deserialize_int(deser, &object->list[index]);
+    return serdec_yaml_deserialize_int(deser, &object->list_of_four[index]);
 }
 
 int my_struct_visit_map_entry(SerdecYamlDeserializer* deser, void* user_data,
@@ -79,11 +74,8 @@ int my_struct_visit_map_entry(SerdecYamlDeserializer* deser, void* user_data,
     return result;
 }
 
-int my_struct_deserialize_yaml(SerdecYamlDeserializer* deser, MyStruct* value)
-{
-    return serdec_yaml_deserialize_map(deser, my_struct_visit_map_entry,
-        value);
-}
+int my_struct_deserialize_yaml(SerdecYamlDeserializer* de, MyStruct* value)
+{ return serdec_yaml_deserialize_map(de, my_struct_visit_map_entry, value); }
 
 const char* DOCUMENT = "\
 test: true\n\
@@ -105,10 +97,10 @@ TEST(YamlDeser, BasicDocument) {
     TEST_ASSERT(1 == result);
     TEST_ASSERT(true == my_struct.test);
     TEST_ASSERT(1 == my_struct.a_number);
-    TEST_ASSERT(1 == my_struct.list[0]);
-    TEST_ASSERT(2 == my_struct.list[1]);
-    TEST_ASSERT(3 == my_struct.list[2]);
-    TEST_ASSERT(4 == my_struct.list[3]);
+    TEST_ASSERT(1 == my_struct.list_of_four[0]);
+    TEST_ASSERT(2 == my_struct.list_of_four[1]);
+    TEST_ASSERT(3 == my_struct.list_of_four[2]);
+    TEST_ASSERT(4 == my_struct.list_of_four[3]);
     TEST_ASSERT(!strcmp(my_struct.a_string, "test"));
 }
 

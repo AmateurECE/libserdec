@@ -1,9 +1,9 @@
 ///////////////////////////////////////////////////////////////////////////////
-// NAME:            main.c
+// NAME:            my-struct.h
 //
 // AUTHOR:          Ethan D. Twardy <ethan.twardy@gmail.com>
 //
-// DESCRIPTION:     Test application entrypoint.
+// DESCRIPTION:     Example struct for testing.
 //
 // CREATED:         02/04/2022
 //
@@ -30,13 +30,18 @@
 // IN THE SOFTWARE.
 ////
 
-#include <unity_fixture.h>
+#ifndef SERDEC_MY_STRUCT_H
+#define SERDEC_MY_STRUCT_H
 
-int main() {
-    UNITY_BEGIN();
-    RUN_TEST_GROUP(YamlDeser);
-    RUN_TEST_GROUP(YamlSer);
-    return UNITY_END();
-}
+#include <stdbool.h>
+
+typedef struct MyStruct {
+    bool test;
+    int a_number;
+    char* a_string;
+    int list_of_four[4];
+} MyStruct;
+
+#endif // SERDEC_MY_STRUCT_H
 
 ///////////////////////////////////////////////////////////////////////////////

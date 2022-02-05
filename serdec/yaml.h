@@ -39,9 +39,18 @@
 
 // This struct maintains all internal state of the deserializer.
 typedef struct SerdecYamlDeserializer SerdecYamlDeserializer;
+typedef struct SerdecYamlSerializer SerdecYamlSerializer;
 
 ///////////////////////////////////////////////////////////////////////////////
-// De-serializer initialization
+// Error Handling
+////
+
+// Obtain error strings from the de/serializers.
+const char* serdec_yaml_deserializer_strerror(SerdecYamlDeserializer* deser);
+const char* serdec_yaml_serializer_strerror(SerdecYamlSerializer* ser);
+
+///////////////////////////////////////////////////////////////////////////////
+// De-serializer Initialization
 ////
 
 // Initialize a de-serializer from the given input string.
@@ -94,6 +103,65 @@ int serdec_yaml_deserialize_int(SerdecYamlDeserializer* deser, int* value);
 // zero if parsing encounters an error.
 int serdec_yaml_deserialize_string(SerdecYamlDeserializer* deser,
     char** value);
+
+///////////////////////////////////////////////////////////////////////////////
+// Serializer Initialization
+////
+
+// Initialize a serializer which writes to the buffer. If the buffer does not
+// contain enough space, an error is signaled.
+SerdecYamlSerializer* serdec_yaml_serializer_new_buffer(char* buffer,
+    size_t buffer_length);
+
+// Initialize a serializer which will generate a string. The string will be
+// allocated with malloc(3), and can be borrowed with _borrow_string().
+SerdecYamlSerializer* serdec_yaml_serializer_new_string();
+const char* serdec_yaml_serializer_borrow_string(SerdecYamlSerializer* ser);
+
+// Initialize a serializer from the given input string.
+SerdecYamlSerializer* serdec_yaml_serializer_new_file(FILE* input_file);
+
+// Free a serializer.
+void serdec_yaml_serializer_free(SerdecYamlSerializer* ser);
+
+///////////////////////////////////////////////////////////////////////////////
+// Serializer Routines
+////
+
+// The serializer framework requires calling _start() before beginning to
+// serialize any data structures. Likewise, it's necessary to call _end()
+// before extracting any output from the serializer, or else the stream may
+// not be terminated.
+int serdec_yaml_serialize_start(SerdecYamlSerializer* ser);
+int serdec_yaml_serialize_end(SerdecYamlSerializer* ser);
+
+// Serialize a map to the output stream. To use this in an object serialization
+// routine, first call _start(). For each map entry, call _key() with the key
+// to associate with the desired value. Call one of the other serialization
+// routines to serialize the value for the associated key into the output
+// stream. Finally, call _end().
+int serdec_yaml_serialize_map_start(SerdecYamlSerializer* ser);
+int serdec_yaml_serialize_map_end(SerdecYamlSerializer* ser);
+int serdec_yaml_serialize_map_key(SerdecYamlSerializer* ser, const char* key);
+
+// Serialize a list to the output stream. To use this in an object
+// serialization routine, first call start. For each element in the list, call
+// a serialization routine to serialize a single element into the output
+// stream. Finally, call _end().
+int serdec_yaml_serialize_list_start(SerdecYamlSerializer* ser);
+int serdec_yaml_serialize_list_end(SerdecYamlSerializer* ser);
+
+// Serialize a boolean to the output stream. Return a number less than zero
+// if parsing encountered an error, for any reason.
+int serdec_yaml_serialize_bool(SerdecYamlSerializer* ser, bool value);
+
+// Serialize an integer value to the output stream. Return a number less than
+// zero if parsing encountered an error, for any reason.
+int serdec_yaml_serialize_int(SerdecYamlSerializer* ser, int value);
+
+// Serialize a string value to the output stream. Return a number less than
+// zero if parsing encounters an error.
+int serdec_yaml_serialize_string(SerdecYamlSerializer* ser, const char* value);
 
 #endif // SERDEC_YAML_H
 

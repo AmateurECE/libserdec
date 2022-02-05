@@ -54,7 +54,9 @@ libyaml = dependency('yaml-0.1')
 libserdec = library(
   'serdec',
   sources: [
-  'serdec/yaml.c',
+    'serdec/yaml-deser.c',
+    'serdec/yaml-ser.c',
+    'serdec/string-ops.c',
   ],
   dependencies: [libyaml],
   include_directories: ['.'],
@@ -72,6 +74,7 @@ executable(
   sources: files([
     'test/main.c',
     'test/test-yaml-deser.c',
+    'test/test-yaml-ser.c',
   ]),
   include_directories: ['.'],
   link_with: [libserdec],
