@@ -68,7 +68,12 @@ int my_struct_visit_map_entry(SerdecYamlDeserializer* deser, void* user_data,
     } else if (!strcmp(key, "a_string")) {
         const char* temp = NULL;
         TEST_ASSERT(0 == serdec_yaml_deserialize_string(deser, &temp));
-        object->a_string = strdup(temp);
+        // I would normally use strdup here, but apparently unity doesn't play
+        // well with memory alloc'd by strdup.
+        size_t length = strlen(temp) + 1;
+        object->a_string = malloc(length);
+        memset(object->a_string, 0, length);
+        strcpy(object->a_string, temp);
     }
 
     return 0;
@@ -103,6 +108,7 @@ TEST(YamlDeser, BasicDocument) {
     TEST_ASSERT(3 == my_struct.list_of_four[2]);
     TEST_ASSERT(4 == my_struct.list_of_four[3]);
     TEST_ASSERT(!strcmp(my_struct.a_string, "test"));
+    free(my_struct.a_string);
     serdec_yaml_deserializer_free(deser);
 }
 

@@ -61,8 +61,11 @@ typedef struct SerdecYamlDeserializer {
 ////
 
 static int yaml_peek_event(SerdecYamlDeserializer* deser) {
-    int result = yaml_parser_parse(&deser->parser, &deser->event_buffer);
-    if (!result) {
+    if (YAML_NO_EVENT != deser->event_buffer.type) {
+        yaml_event_delete(&deser->event_buffer);
+    }
+
+    if (!yaml_parser_parse(&deser->parser, &deser->event_buffer)) {
         deser->error = SERDEC_YAML_UNKNOWN_ERROR;
         return deser->error;
     }
@@ -70,8 +73,8 @@ static int yaml_peek_event(SerdecYamlDeserializer* deser) {
 }
 
 static int yaml_next_event(SerdecYamlDeserializer* deser) {
+    yaml_event_delete(&deser->event);
     if (YAML_NO_EVENT == deser->event_buffer.type) {
-        yaml_event_delete(&deser->event);
         if (!yaml_parser_parse(&deser->parser, &deser->event)) {
             deser->error = SERDEC_YAML_UNKNOWN_ERROR;
             return deser->error;
@@ -169,6 +172,8 @@ SerdecYamlDeserializer* serdec_yaml_deserializer_new_file(FILE* input_file) {
 
 // Free a de-serializer.
 void serdec_yaml_deserializer_free(SerdecYamlDeserializer* deser) {
+    yaml_event_delete(&deser->event);
+    yaml_event_delete(&deser->event_buffer);
     yaml_parser_delete(&deser->parser);
     free(deser);
 }
@@ -213,11 +218,7 @@ int serdec_yaml_deserialize_map(SerdecYamlDeserializer* deser,
         }
     }
 
-    yaml_event_delete(&deser->event);
-    if (!yaml_parser_parse(&deser->parser, &deser->event)) {
-        deser->error = SERDEC_YAML_UNKNOWN_ERROR;
-        return deser->error;
-    }
+    yaml_event_delete(&deser->event_buffer);
     return 0;
 }
 
@@ -247,6 +248,7 @@ int serdec_yaml_deserialize_list(SerdecYamlDeserializer* deser,
         }
     }
 
+    yaml_event_delete(&deser->event_buffer);
     return result;
 }
 
