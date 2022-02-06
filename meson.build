@@ -7,7 +7,7 @@
 #
 # CREATED:          12/20/2021
 #
-# LAST EDITED:      02/04/2022
+# LAST EDITED:      02/06/2022
 #
 # Copyright 2021, Ethan D. Twardy
 #
@@ -32,7 +32,7 @@
 
 project(
   'libserdec', 'c',
-  version: '0.2.0',
+  version: '0.3.0',
   default_options: [
     'buildtype=debug',
     'warning_level=3',
