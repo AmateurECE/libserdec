@@ -7,7 +7,7 @@
 //
 // CREATED:         12/20/2021
 //
-// LAST EDITED:     02/04/2022
+// LAST EDITED:     02/06/2022
 //
 // Copyright 2021, Ethan D. Twardy
 //
@@ -61,7 +61,7 @@ SerdecYamlDeserializer* serdec_yaml_deserializer_new_string(const char* string,
 SerdecYamlDeserializer* serdec_yaml_deserializer_new_file(FILE* input_file);
 
 // Free a de-serializer.
-void serdec_yaml_deserializer_free(SerdecYamlDeserializer** deser);
+void serdec_yaml_deserializer_free(SerdecYamlDeserializer* deser);
 
 ///////////////////////////////////////////////////////////////////////////////
 // De-serialization Routines
@@ -89,20 +89,19 @@ typedef int yaml_visit_list_callback(SerdecYamlDeserializer* deser,
 int serdec_yaml_deserialize_list(SerdecYamlDeserializer* deser,
     yaml_visit_list_callback* callback, void* user_data);
 
-// De-serialize a boolean from the input stream. Return a number less than zero
-// if parsing encountered an error, for any reason. This callback requires that
-// booleans be either "true" or "false", and cannot be a value of "0" or
-// non-zero.
+// De-serialize a boolean from the input stream. Return non-zero if parsing
+// encountered an error, for any reason. This callback requires that booleans
+// be either "true" or "false", and cannot be a value of "0" or non-zero.
 int serdec_yaml_deserialize_bool(SerdecYamlDeserializer* deser, bool* value);
 
-// De-serialize an integer value from the input stream. Return a number less
-// than zero if parsing encountered an error, for any reason.
+// De-serialize an integer value from the input stream. Return non-zero if
+// parsing encountered an error, for any reason.
 int serdec_yaml_deserialize_int(SerdecYamlDeserializer* deser, int* value);
 
-// De-serialize a string value from the input stream. Return a number less than
-// zero if parsing encounters an error.
+// De-serialize a string value from the input stream. Return non-zero if
+// parsing encounters an error.
 int serdec_yaml_deserialize_string(SerdecYamlDeserializer* deser,
-    char** value);
+    const char** value);
 
 ///////////////////////////////////////////////////////////////////////////////
 // Serializer Initialization
@@ -151,16 +150,16 @@ int serdec_yaml_serialize_map_key(SerdecYamlSerializer* ser, const char* key);
 int serdec_yaml_serialize_list_start(SerdecYamlSerializer* ser);
 int serdec_yaml_serialize_list_end(SerdecYamlSerializer* ser);
 
-// Serialize a boolean to the output stream. Return a number less than zero
-// if parsing encountered an error, for any reason.
+// Serialize a boolean to the output stream. Return non-zero if parsing
+// encountered an error, for any reason.
 int serdec_yaml_serialize_bool(SerdecYamlSerializer* ser, bool value);
 
-// Serialize an integer value to the output stream. Return a number less than
-// zero if parsing encountered an error, for any reason.
+// Serialize an integer value to the output stream. Return non-zero if parsing
+// encountered an error, for any reason.
 int serdec_yaml_serialize_int(SerdecYamlSerializer* ser, int value);
 
-// Serialize a string value to the output stream. Return a number less than
-// zero if parsing encounters an error.
+// Serialize a string value to the output stream. Return non-zero if parsing
+// encounters an error.
 int serdec_yaml_serialize_string(SerdecYamlSerializer* ser, const char* value);
 
 #endif // SERDEC_YAML_H

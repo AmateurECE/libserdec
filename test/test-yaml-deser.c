@@ -7,7 +7,7 @@
 //
 // CREATED:         12/20/2021
 //
-// LAST EDITED:     02/04/2022
+// LAST EDITED:     02/06/2022
 //
 // Copyright 2021, Ethan D. Twardy
 //
@@ -48,36 +48,38 @@ int my_struct_visit_list_entry(SerdecYamlDeserializer* deser, void* user_data,
     size_t index)
 {
     MyStruct* object = (MyStruct*)user_data;
-    return serdec_yaml_deserialize_int(deser, &object->list_of_four[index]);
+    TEST_ASSERT(0 == serdec_yaml_deserialize_int(deser,
+            &object->list_of_four[index]));
+    return 0;
 }
 
 int my_struct_visit_map_entry(SerdecYamlDeserializer* deser, void* user_data,
     const char* key)
 {
     MyStruct* object = (MyStruct*)user_data;
-    int result = 0;
     if (!strcmp(key, "test")) {
-        result = serdec_yaml_deserialize_bool(deser, &object->test);
+        TEST_ASSERT(0 == serdec_yaml_deserialize_bool(deser, &object->test));
     } else if (!strcmp(key, "a_number")) {
-        result = serdec_yaml_deserialize_int(deser, &object->a_number);
+        TEST_ASSERT(0 == serdec_yaml_deserialize_int(deser,
+                &object->a_number));
     } else if (!strcmp(key, "list_of_four")) {
-        result = serdec_yaml_deserialize_list(deser,
-            my_struct_visit_list_entry, object);
+        TEST_ASSERT(0 == serdec_yaml_deserialize_list(deser,
+                my_struct_visit_list_entry, object));
     } else if (!strcmp(key, "a_string")) {
-        result = serdec_yaml_deserialize_string(deser, &object->a_string);
+        const char* temp = NULL;
+        TEST_ASSERT(0 == serdec_yaml_deserialize_string(deser, &temp));
+        object->a_string = strdup(temp);
     }
 
-    if (!result) {
-        return -EINVAL;
-    }
-
-    return result;
+    return 0;
 }
 
 int my_struct_deserialize_yaml(SerdecYamlDeserializer* de, MyStruct* value)
 { return serdec_yaml_deserialize_map(de, my_struct_visit_map_entry, value); }
 
 const char* DOCUMENT = "\
+%YAML 1.1\n\
+---\n\
 test: true\n\
 a_number: 1\n\
 a_string: 'test'\n\
@@ -93,8 +95,7 @@ TEST(YamlDeser, BasicDocument) {
         DOCUMENT, strlen(DOCUMENT));
     TEST_ASSERT(NULL != deser);
     MyStruct my_struct = {0};
-    int result = my_struct_deserialize_yaml(deser, &my_struct);
-    TEST_ASSERT(1 == result);
+    TEST_ASSERT(0 == my_struct_deserialize_yaml(deser, &my_struct));
     TEST_ASSERT(true == my_struct.test);
     TEST_ASSERT(1 == my_struct.a_number);
     TEST_ASSERT(1 == my_struct.list_of_four[0]);
@@ -102,6 +103,7 @@ TEST(YamlDeser, BasicDocument) {
     TEST_ASSERT(3 == my_struct.list_of_four[2]);
     TEST_ASSERT(4 == my_struct.list_of_four[3]);
     TEST_ASSERT(!strcmp(my_struct.a_string, "test"));
+    serdec_yaml_deserializer_free(deser);
 }
 
 TEST_GROUP_RUNNER(YamlDeser) {

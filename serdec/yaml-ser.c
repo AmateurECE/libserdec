@@ -41,9 +41,9 @@
 #include <serdec/yaml.h>
 #include <serdec/string-ops.h>
 
-static const char* SERR_YAML_ERROR_STRINGS[] = {
-    [SERR_YAML_UNKNOWN_ERROR]="unknown error in libyaml",
-    [SERR_YAML_WRONG_TYPE]="serializer is the wrong type for the operation",
+static const char* SERDEC_YAML_ERROR_STRINGS[] = {
+    [SERDEC_YAML_UNKNOWN_ERROR]="unknown error in libyaml",
+    [SERDEC_YAML_WRONG_TYPE]="serializer is the wrong type for the operation",
 };
 
 static const int SERDEC_YAML_INDENT = 4;
@@ -81,18 +81,15 @@ static int string_write(void* user_data, unsigned char* buffer, size_t length)
 ////
 
 const char* serdec_yaml_serializer_strerror(SerdecYamlSerializer* ser) {
-    if (0 > ser->error || SERR_YAML_MAX_ERROR <= ser->error) {
+    if (0 > ser->error || SERDEC_YAML_MAX_ERROR <= ser->error) {
         return NULL;
     }
 
     switch (ser->error) {
-    case SERR_YAML_SYSTEM_ERROR: return strerror(errno);
-    case SERR_YAML_UNKNOWN_ERROR: return ser->emitter.problem;
+    case SERDEC_YAML_SYSTEM_ERROR: return strerror(errno);
+    case SERDEC_YAML_UNKNOWN_ERROR: return ser->emitter.problem;
     default:
-        return SERR_YAML_ERROR_STRINGS[ser->error];
-    }
-    if (SERR_YAML_SYSTEM_ERROR == ser->error) {
-        return strerror(errno);
+        return SERDEC_YAML_ERROR_STRINGS[ser->error];
     }
 }
 
@@ -127,7 +124,7 @@ SerdecYamlSerializer* serdec_yaml_serializer_new_string() {
 const char* serdec_yaml_serializer_borrow_string(SerdecYamlSerializer* ser)
 {
     if (SERIALIZER_STRING != ser->serializer.type) {
-        ser->error = SERR_YAML_WRONG_TYPE;
+        ser->error = SERDEC_YAML_WRONG_TYPE;
         return NULL;
     }
     return ser->serializer.serializer_data;
@@ -155,14 +152,14 @@ int serdec_yaml_serialize_start(SerdecYamlSerializer* ser) {
     yaml_stream_start_event_initialize(&ser->event, YAML_UTF8_ENCODING);
     int result = 0;
     if (!yaml_emitter_emit(&ser->emitter, &ser->event)) {
-        ser->error = SERR_YAML_UNKNOWN_ERROR;
+        ser->error = SERDEC_YAML_UNKNOWN_ERROR;
         result = ser->error;
     }
 
     yaml_version_directive_t version = {.major=1, .minor=1};
     yaml_document_start_event_initialize(&ser->event, &version, NULL, NULL, 0);
     if (!yaml_emitter_emit(&ser->emitter, &ser->event)) {
-        ser->error = SERR_YAML_UNKNOWN_ERROR;
+        ser->error = SERDEC_YAML_UNKNOWN_ERROR;
         result = ser->error;
     }
     return result;
@@ -172,13 +169,13 @@ int serdec_yaml_serialize_end(SerdecYamlSerializer* ser) {
     yaml_document_end_event_initialize(&ser->event, 1);
     int result = 0;
     if (!yaml_emitter_emit(&ser->emitter, &ser->event)) {
-        ser->error = SERR_YAML_UNKNOWN_ERROR;
+        ser->error = SERDEC_YAML_UNKNOWN_ERROR;
         result = ser->error;
     }
 
     yaml_stream_end_event_initialize(&ser->event);
     if (!yaml_emitter_emit(&ser->emitter, &ser->event)) {
-        ser->error = SERR_YAML_UNKNOWN_ERROR;
+        ser->error = SERDEC_YAML_UNKNOWN_ERROR;
         result = ser->error;
     }
     return result;
@@ -194,7 +191,7 @@ int serdec_yaml_serialize_map_start(SerdecYamlSerializer* ser) {
         (const yaml_char_t*)YAML_MAP_TAG, 1, YAML_ANY_MAPPING_STYLE);
     int result = 0;
     if (!yaml_emitter_emit(&ser->emitter, &ser->event)) {
-        ser->error = SERR_YAML_UNKNOWN_ERROR;
+        ser->error = SERDEC_YAML_UNKNOWN_ERROR;
         result = ser->error;
     }
     return result;
@@ -204,7 +201,7 @@ int serdec_yaml_serialize_map_end(SerdecYamlSerializer* ser) {
     yaml_mapping_end_event_initialize(&ser->event);
     int result = 0;
     if (!yaml_emitter_emit(&ser->emitter, &ser->event)) {
-        ser->error = SERR_YAML_UNKNOWN_ERROR;
+        ser->error = SERDEC_YAML_UNKNOWN_ERROR;
         result = ser->error;
     }
     return result;
@@ -215,7 +212,7 @@ int serdec_yaml_serialize_map_key(SerdecYamlSerializer* ser, const char* key) {
         (const yaml_char_t*)key, strlen(key), 1, 0, YAML_PLAIN_SCALAR_STYLE);
     int result = 0;
     if (!yaml_emitter_emit(&ser->emitter, &ser->event)) {
-        ser->error = SERR_YAML_UNKNOWN_ERROR;
+        ser->error = SERDEC_YAML_UNKNOWN_ERROR;
         result = ser->error;
     }
     return result;
@@ -230,7 +227,7 @@ int serdec_yaml_serialize_list_start(SerdecYamlSerializer* ser) {
         YAML_ANY_SEQUENCE_STYLE);
     int result = 0;
     if (!yaml_emitter_emit(&ser->emitter, &ser->event)) {
-        ser->error = SERR_YAML_UNKNOWN_ERROR;
+        ser->error = SERDEC_YAML_UNKNOWN_ERROR;
         result = ser->error;
     }
     return result;
@@ -240,14 +237,14 @@ int serdec_yaml_serialize_list_end(SerdecYamlSerializer* ser) {
     yaml_sequence_end_event_initialize(&ser->event);
     int result = 0;
     if (!yaml_emitter_emit(&ser->emitter, &ser->event)) {
-        ser->error = SERR_YAML_UNKNOWN_ERROR;
+        ser->error = SERDEC_YAML_UNKNOWN_ERROR;
         result = ser->error;
     }
     return result;
 }
 
-// Serialize a boolean to the output stream. Return a number less than zero
-// if parsing encountered an error, for any reason.
+// Serialize a boolean to the output stream. Return non-zero if parsing
+// encountered an error, for any reason.
 int serdec_yaml_serialize_bool(SerdecYamlSerializer* ser, bool value) {
     const char* string_value = "false";
     if (value) {
@@ -258,19 +255,19 @@ int serdec_yaml_serialize_bool(SerdecYamlSerializer* ser, bool value) {
         strlen(string_value), 1, 0, YAML_PLAIN_SCALAR_STYLE);
     int result = 0;
     if (!yaml_emitter_emit(&ser->emitter, &ser->event)) {
-        ser->error = SERR_YAML_UNKNOWN_ERROR;
+        ser->error = SERDEC_YAML_UNKNOWN_ERROR;
         result = ser->error;
     }
     return result;
 }
 
-// Serialize an integer value to the output stream. Return a number less than
-// zero if parsing encountered an error, for any reason.
+// Serialize an integer value to the output stream. Return non-zero if parsing
+// encountered an error, for any reason.
 int serdec_yaml_serialize_int(SerdecYamlSerializer* ser, int value) {
     char buffer[64] = {0}; // May as well use a whole cache line?
     int result = snprintf(buffer, sizeof(buffer), "%d", value);
     if (0 > result) {
-        ser->error = SERR_YAML_SYSTEM_ERROR;
+        ser->error = SERDEC_YAML_SYSTEM_ERROR;
         return result;
     }
 
@@ -279,14 +276,14 @@ int serdec_yaml_serialize_int(SerdecYamlSerializer* ser, int value) {
         1, 0, YAML_PLAIN_SCALAR_STYLE);
     result = 0;
     if (!yaml_emitter_emit(&ser->emitter, &ser->event)) {
-        ser->error = SERR_YAML_UNKNOWN_ERROR;
+        ser->error = SERDEC_YAML_UNKNOWN_ERROR;
         result = ser->error;
     }
     return result;
 }
 
-// Serialize a string value to the output stream. Return a number less than
-// zero if parsing encounters an error.
+// Serialize a string value to the output stream. Return non-zero if parsing
+// encounters an error.
 int serdec_yaml_serialize_string(SerdecYamlSerializer* ser, const char* value)
 {
     // TODO: Could use "YAML_LITERAL_SCALAR_STYLE" in here to get '|' for long
@@ -296,7 +293,7 @@ int serdec_yaml_serialize_string(SerdecYamlSerializer* ser, const char* value)
         strlen(value), 1, 1, YAML_SINGLE_QUOTED_SCALAR_STYLE);
     int result = 0;
     if (!yaml_emitter_emit(&ser->emitter, &ser->event)) {
-        ser->error = SERR_YAML_UNKNOWN_ERROR;
+        ser->error = SERDEC_YAML_UNKNOWN_ERROR;
         result = ser->error;
     }
     return result;
